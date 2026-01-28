@@ -1,40 +1,16 @@
 <?php
 defined('ABSPATH') || exit;
 
-/**
- * Помощни функции
- */
 class WC_ASS_Utils {
-
-    /**
-     * Превод на проценти в float
-     * @param mixed $value
-     * @return float
-     */
-    public static function float_percent($value) {
-        return floatval(str_replace('%', '', $value));
+    public static function sanitize_percentage($value): float {
+        return max(0, min(100, (float)$value));
     }
 
-    /**
-     * Форматиране на цена
-     */
-    public static function format_price($price) {
-        return wc_price($price);
-    }
-
-    /**
-     * Вземане на името на категория
-     */
-    public static function get_category_names($ids = []) {
-        if (empty($ids)) return [];
-        return wp_list_pluck(get_terms(['taxonomy' => 'product_cat', 'include' => $ids]), 'name');
-    }
-
-    /**
-     * Вземане на името на производител
-     */
-    public static function get_manufacturer_names($ids = []) {
-        if (empty($ids)) return [];
-        return wp_list_pluck(get_terms(['taxonomy' => 'product_brand', 'include' => $ids]), 'name');
+    public static function parse_date(string $date): ?\DateTime {
+        try {
+            return new \DateTime($date);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }

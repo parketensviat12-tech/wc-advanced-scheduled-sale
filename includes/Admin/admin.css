@@ -1,15 +1,16 @@
-.wc-ass-admin h1 {
-    margin-bottom: 20px;
-}
-
-.wc-ass-admin table.form-table th {
-    width: 200px;
-    padding-right: 10px;
-}
-
-#wc-ass-result {
-    margin-top: 20px;
-    padding: 10px;
-    background: #f7f7f7;
+.wc-ass-wrapper {
+    padding: 20px;
+    background: #fff;
     border: 1px solid #ddd;
+}
+
+.wc-ass-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.wc-ass-table th, .wc-ass-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
 }

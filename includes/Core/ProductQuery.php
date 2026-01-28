@@ -7,37 +7,39 @@ defined('ABSPATH') || exit;
 class WC_ASS_ProductQuery {
 
     /**
-     * @param array $category_ids
-     * @param array $manufacturer_ids
-     * @return WC_Product[]
+     * @param int[] $category_ids
+     * @param int[] $manufacturer_ids
+     * @return int[] Връща IDs на продуктите
      */
-    public static function get_products($category_ids = [], $manufacturer_ids = []) {
-        $args = [
-            'post_type'      => 'product',
-            'posts_per_page' => -1, // Вземи всички
-            'post_status'    => 'publish',
-            'fields'         => 'ids',
-            'tax_query'      => ['relation' => 'AND']
-        ];
+    public static function get_products(array $category_ids = [], array $manufacturer_ids = []): array {
+        $tax_query = ['relation' => 'AND'];
 
         if (!empty($category_ids)) {
-            $args['tax_query'][] = [
+            $tax_query[] = [
                 'taxonomy' => 'product_cat',
                 'field'    => 'term_id',
                 'terms'    => $category_ids,
-                'operator' => 'IN'
+                'operator' => 'IN',
             ];
         }
 
         if (!empty($manufacturer_ids)) {
-            $args['tax_query'][] = [
-                'taxonomy' => 'product_brand', // или твоята таксономия за производител
+            $tax_query[] = [
+                'taxonomy' => 'pa_brand', // WooCommerce manufacturer attribute
                 'field'    => 'term_id',
                 'terms'    => $manufacturer_ids,
-                'operator' => 'IN'
+                'operator' => 'IN',
             ];
         }
 
-        return get_posts($args);
+        $query_args = [
+            'post_type'      => 'product',
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+            'fields'         => 'ids',
+            'tax_query'      => $tax_query,
+        ];
+
+        return get_posts($query_args);
     }
 }

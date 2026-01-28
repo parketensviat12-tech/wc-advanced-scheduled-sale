@@ -7,29 +7,20 @@ defined('ABSPATH') || exit;
 class WC_ASS_Apply {
 
     /**
-     * @param array $product_ids
-     * @param float $discount_percent
-     * @return int Колко продукта са променени
+     * @param int[] $product_ids
+     * @param float $percent
      */
-    public static function apply($product_ids, $discount_percent) {
-        $count = 0;
-
+    public static function apply_discount(array $product_ids, float $percent): void {
         foreach ($product_ids as $id) {
             $product = wc_get_product($id);
             if (!$product) continue;
 
-            $regular = floatval($product->get_regular_price());
-            $sale = round($regular * (1 - $discount_percent / 100), 2);
-
-            $product->set_sale_price($sale);
+            $regular = (float)$product->get_regular_price();
+            $new_price = round($regular * (1 - $percent / 100), 2);
+            $product->set_sale_price($new_price);
             $product->save();
 
-            // Лог
-            WC_ASS_Logger::log("Отстъпка $discount_percent% приложена на продукт {$id} ({$product->get_name()})");
-
-            $count++;
+            WC_ASS_Logger::log("Applied {$percent}% discount to product #{$id}: {$regular} -> {$new_price}");
         }
-
-        return $count;
     }
 }

@@ -2,33 +2,24 @@
 defined('ABSPATH') || exit;
 
 /**
- * DryRun – Preview на отстъпките без да се прилагат
+ * Dry-run / Preview
  */
 class WC_ASS_DryRun {
 
     /**
-     * @param array $product_ids
-     * @param float $discount_percent
-     * @return array
+     * @param int[] $product_ids
+     * @param float $percent
+     * @return array [product_id => new_price]
      */
-    public static function preview($product_ids, $discount_percent) {
-        $results = [];
-
+    public static function calculate(array $product_ids, float $percent): array {
+        $result = [];
         foreach ($product_ids as $id) {
             $product = wc_get_product($id);
             if (!$product) continue;
 
-            $regular = floatval($product->get_regular_price());
-            $sale = round($regular * (1 - $discount_percent / 100), 2);
-
-            $results[] = [
-                'ID' => $id,
-                'title' => $product->get_name(),
-                'regular_price' => $regular,
-                'sale_price' => $sale
-            ];
+            $regular = (float)$product->get_regular_price();
+            $result[$id] = round($regular * (1 - $percent / 100), 2);
         }
-
-        return $results;
+        return $result;
     }
 }

@@ -2,30 +2,30 @@
 defined('ABSPATH') || exit;
 
 /**
- * Rule Engine – прилагане на правила за отстъпки
+ * Rule engine – изчислява дали продуктът попада в правилата
  */
 class WC_ASS_RuleEngine {
 
     /**
-     * Проверява дали продуктът отговаря на правилата
+     * Проверява дали даден продукт отговаря на правилото
      * @param int $product_id
-     * @param array $rules
+     * @param array $rule
      * @return bool
      */
-    public static function validate($product_id, $rules) {
+    public static function matches_rule(int $product_id, array $rule): bool {
         $product = wc_get_product($product_id);
         if (!$product) return false;
 
-        // Проверка по категория
-        if (!empty($rules['categories'])) {
-            $terms = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
-            if (!array_intersect($rules['categories'], $terms)) return false;
+        // Проверка категория
+        if (!empty($rule['categories'])) {
+            $product_cats = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
+            if (empty(array_intersect($rule['categories'], $product_cats))) return false;
         }
 
-        // Проверка по производител
-        if (!empty($rules['manufacturers'])) {
-            $terms = wp_get_post_terms($product_id, 'product_brand', ['fields' => 'ids']);
-            if (!array_intersect($rules['manufacturers'], $terms)) return false;
+        // Проверка производител
+        if (!empty($rule['manufacturers'])) {
+            $product_brands = wp_get_post_terms($product_id, 'pa_brand', ['fields' => 'ids']);
+            if (empty(array_intersect($rule['manufacturers'], $product_brands))) return false;
         }
 
         return true;
