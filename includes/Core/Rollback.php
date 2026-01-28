@@ -1,20 +1,30 @@
 <?php
 defined('ABSPATH') || exit;
 
-class WC_Ass_Rollback {
+/**
+ * Rollback – връща предишната цена
+ */
+class WC_ASS_Rollback {
 
     /**
-     * Възстановява оригиналните цени на продуктите
+     * @param array $product_ids
+     * @return int
      */
-    public static function rollback_products(array $product_ids) {
-        foreach ($product_ids as $product_id) {
-            $product = wc_get_product($product_id);
+    public static function undo($product_ids) {
+        $count = 0;
+
+        foreach ($product_ids as $id) {
+            $product = wc_get_product($id);
             if (!$product) continue;
 
             $product->set_sale_price(''); // премахва sale_price
             $product->save();
 
-            WC_Ass_Logger::log("Rollback: премахната отстъпка на продукт ID {$product_id}");
+            WC_ASS_Logger::log("Rollback на продукт {$id} ({$product->get_name()})");
+
+            $count++;
         }
+
+        return $count;
     }
 }

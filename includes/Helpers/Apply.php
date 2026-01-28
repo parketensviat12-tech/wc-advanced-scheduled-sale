@@ -1,32 +1,38 @@
 <?php
 defined('ABSPATH') || exit;
 
-class WC_Ass_Apply {
-    public static function apply_discount($start, $end, $percent, $exclude_cats = [], $brands = []) {
-        $today = date('Y-m-d');
-        if($today < $start || $today > $end) return false;
+/**
+ * Помощен клас за прилагане на правила и отстъпки
+ */
+class WC_ASS_Helper_Apply {
 
-        $args = [
-            'post_type' => 'product',
-            'posts_per_page' => -1,
-            'tax_query' => []
-        ];
+    /**
+     * Прилага правила и отстъпки на продуктите
+     * @param array $rules Множество правила (категории + производители + процент)
+     * @param bool $dry_run Ако е true, само preview
+     * @return array Резултати от прилагането
+     */
+    public static function run_rules($rules, $dry_run = false) {
+        $all_results = [];
 
-        if(!empty($exclude_cats)){
-            $args['tax_query'][] = ['taxonomy'=>'product_cat','field'=>'term_id','terms'=>$exclude_cats,'operator'=>'NOT IN'];
-        }
-        if(!empty($brands)){
-            $args['tax_query'][] = ['taxonomy'=>'product_brand','field'=>'term_id','terms'=>$brands,'operator'=>'IN'];
+        foreach ($rules as $rule) {
+            $products = WC_ASS_ProductQuery::get_products(
+                $rule['categories'] ?? [],
+                $rule['manufacturers'] ?? []
+            );
+
+            if ($dry_run) {
+                $results = WC_ASS_DryRun::preview($products, $rule['discount_percent']);
+            } else {
+                $results = WC_ASS_Apply::apply($products, $rule['discount_percent']);
+            }
+
+            $all_results[] = [
+                'rule' => $rule,
+                'products' => $results
+            ];
         }
 
-        $products = get_posts($args);
-        foreach($products as $product_post){
-            $product = wc_get_product($product_post->ID);
-            $regular = $product->get_regular_price();
-            $new_price = round($regular * (1 - ($percent/100)),2);
-            $product->set_sale_price($new_price);
-            $product->save();
-            WC_Ass_Logger::log("Product ID {$product_post->ID} updated: {$regular} → {$new_price}");
-        }
+        return $all_results;
     }
 }

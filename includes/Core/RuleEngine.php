@@ -1,37 +1,33 @@
 <?php
 defined('ABSPATH') || exit;
 
-class WC_Ass_RuleEngine {
+/**
+ * Rule Engine – прилагане на правила за отстъпки
+ */
+class WC_ASS_RuleEngine {
 
     /**
-     * Пресмята процентите по правило
+     * Проверява дали продуктът отговаря на правилата
+     * @param int $product_id
+     * @param array $rules
+     * @return bool
      */
-    public static function calculate_discount($rule, $product) {
-        $default_discount = floatval($rule['discount'] ?? 0);
+    public static function validate($product_id, $rules) {
+        $product = wc_get_product($product_id);
+        if (!$product) return false;
 
-        // Ако има различен процент по производител
-        if (!empty($rule['brand_discounts']) && $product->get_attribute('pa_brand')) {
-            $brand = $product->get_attribute('pa_brand');
-            if (isset($rule['brand_discounts'][$brand])) {
-                return floatval($rule['brand_discounts'][$brand]);
-            }
+        // Проверка по категория
+        if (!empty($rules['categories'])) {
+            $terms = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
+            if (!array_intersect($rules['categories'], $terms)) return false;
         }
 
-        return $default_discount;
-    }
-
-    /**
-     * Проверка дали продуктът покрива правилото (AND / OR)
-     */
-    public static function match_rule($rule, $product) {
-        $match_type = $rule['match_type'] ?? 'AND'; // AND или OR
-        $category_match = empty($rule['categories']) || has_term($rule['categories'], 'product_cat', $product->get_id());
-        $brand_match = empty($rule['brands']) || has_term($rule['brands'], 'pa_brand', $product->get_id());
-
-        if ($match_type === 'AND') {
-            return $category_match && $brand_match;
-        } else {
-            return $category_match || $brand_match;
+        // Проверка по производител
+        if (!empty($rules['manufacturers'])) {
+            $terms = wp_get_post_terms($product_id, 'product_brand', ['fields' => 'ids']);
+            if (!array_intersect($rules['manufacturers'], $terms)) return false;
         }
+
+        return true;
     }
 }

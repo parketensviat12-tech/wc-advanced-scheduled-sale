@@ -1,45 +1,43 @@
 <?php
 defined('ABSPATH') || exit;
 
-class WC_Ass_ProductQuery {
+/**
+ * Вземане на продукти по категории и производители
+ */
+class WC_ASS_ProductQuery {
 
-    public static function get_products_by_rule($rule) {
+    /**
+     * @param array $category_ids
+     * @param array $manufacturer_ids
+     * @return WC_Product[]
+     */
+    public static function get_products($category_ids = [], $manufacturer_ids = []) {
         $args = [
-            'post_type' => 'product',
-            'posts_per_page' => -1,
-            'fields' => 'ids',
-            'tax_query' => [],
-            'meta_query' => [],
+            'post_type'      => 'product',
+            'posts_per_page' => -1, // Вземи всички
+            'post_status'    => 'publish',
+            'fields'         => 'ids',
+            'tax_query'      => ['relation' => 'AND']
         ];
 
-        // Филтър по категория
-        if (!empty($rule['categories'])) {
+        if (!empty($category_ids)) {
             $args['tax_query'][] = [
                 'taxonomy' => 'product_cat',
                 'field'    => 'term_id',
-                'terms'    => $rule['categories'],
+                'terms'    => $category_ids,
+                'operator' => 'IN'
             ];
         }
 
-        // Филтър по производител
-        if (!empty($rule['brands'])) {
+        if (!empty($manufacturer_ids)) {
             $args['tax_query'][] = [
-                'taxonomy' => 'pa_brand', // примерен атрибут за производител
-                'field'    => 'slug',
-                'terms'    => $rule['brands'],
+                'taxonomy' => 'product_brand', // или твоята таксономия за производител
+                'field'    => 'term_id',
+                'terms'    => $manufacturer_ids,
+                'operator' => 'IN'
             ];
         }
 
-        // Филтър по SKU
-        if (!empty($rule['skus'])) {
-            $args['meta_query'][] = [
-                'key'   => '_sku',
-                'value' => $rule['skus'],
-                'compare' => 'IN'
-            ];
-        }
-
-        $query = new WP_Query($args);
-        return $query->posts ?? [];
+        return get_posts($args);
     }
 }

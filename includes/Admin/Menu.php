@@ -1,27 +1,28 @@
 <?php
 defined('ABSPATH') || exit;
 
-class WC_Ass_Menu {
+class WC_ASS_Admin_Menu {
 
-    public static function init() {
-        add_action('admin_menu', [__CLASS__, 'add_menu']);
+    public function __construct() {
+        add_action('admin_menu', [$this, 'register_menu']);
     }
 
-    public static function add_menu() {
+    public function register_menu() {
         add_menu_page(
-            __('WC Scheduled Sales', 'wc-advanced-scheduled-sale'),
-            __('WC Sales', 'wc-advanced-scheduled-sale'),
-            'manage_options',
-            'wc-ass',
-            [__CLASS__, 'render_page'],
-            'dashicons-tag',
+            __('Насрочени отстъпки', 'wc-advanced-scheduled-sale'),
+            __('Насрочени отстъпки', 'wc-advanced-scheduled-sale'),
+            'manage_woocommerce',
+            'wc-advanced-scheduled-sale',
+            [$this, 'admin_page'],
+            'dashicons-tickets-alt',
             56
         );
     }
 
-    public static function render_page() {
-        require WC_ASS_PATH . 'includes/Admin/Page.php';
+    public function admin_page() {
+        // Включваме страницата
+        include WC_ASS_PATH . 'includes/Admin/Page.php';
     }
 }
 
-WC_Ass_Menu::init();
+new WC_ASS_Admin_Menu();

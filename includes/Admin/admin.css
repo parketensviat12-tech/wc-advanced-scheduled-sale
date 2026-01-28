@@ -1,20 +1,15 @@
-.wrap h1 {
-    color: #0073aa;
+.wc-ass-admin h1 {
+    margin-bottom: 20px;
 }
 
-.widefat th {
-    background-color: #f1f1f1;
-    text-align: left;
-    padding: 8px;
+.wc-ass-admin table.form-table th {
+    width: 200px;
+    padding-right: 10px;
 }
 
-.widefat td {
-    padding: 8px;
-}
-
-.button-primary {
-    background: #0073aa;
-    border-color: #006799;
-    color: #fff;
-    text-decoration: none;
+#wc-ass-result {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
 }

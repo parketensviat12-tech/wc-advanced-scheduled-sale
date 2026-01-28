@@ -1,43 +1,67 @@
 <?php
 defined('ABSPATH') || exit;
-
-$rules = get_option('wc_ass_rules', []);
 ?>
 
-<div class="wrap">
+<div class="wrap wc-ass-admin">
     <h1><?php _e('Насрочени отстъпки за WooCommerce', 'wc-advanced-scheduled-sale'); ?></h1>
 
-    <form method="post">
-        <h2><?php _e('Правила', 'wc-advanced-scheduled-sale'); ?></h2>
-        <p><?php _e('Тук можете да добавяте или редактирате правила за sale price.', 'wc-advanced-scheduled-sale'); ?></p>
-        <button class="button button-primary" type="submit" name="preview"><?php _e('Preview / Test', 'wc-advanced-scheduled-sale'); ?></button>
+    <form method="post" id="wc-ass-form">
+        <table class="form-table">
+            <tr>
+                <th><?php _e('Производител', 'wc-advanced-scheduled-sale'); ?></th>
+                <td>
+                    <select name="wc_ass_manufacturer[]" multiple>
+                        <?php
+                        $terms = get_terms(['taxonomy' => 'product_brand', 'hide_empty' => false]);
+                        foreach ($terms as $term) {
+                            echo '<option value="' . esc_attr($term->term_id) . '">' . esc_html($term->name) . '</option>';
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <th><?php _e('Категории', 'wc-advanced-scheduled-sale'); ?></th>
+                <td>
+                    <select name="wc_ass_categories[]" multiple>
+                        <?php
+                        $cats = get_terms(['taxonomy' => 'product_cat', 'hide_empty' => false]);
+                        foreach ($cats as $cat) {
+                            echo '<option value="' . esc_attr($cat->term_id) . '">' . esc_html($cat->name) . '</option>';
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <th><?php _e('Процент отстъпка', 'wc-advanced-scheduled-sale'); ?></th>
+                <td>
+                    <input type="number" name="wc_ass_discount" value="10" min="0" max="100" /> %
+                </td>
+            </tr>
+
+            <tr>
+                <th><?php _e('Начална дата', 'wc-advanced-scheduled-sale'); ?></th>
+                <td>
+                    <input type="date" name="wc_ass_start" value="<?php echo date('Y-m-d'); ?>" />
+                </td>
+            </tr>
+
+            <tr>
+                <th><?php _e('Крайна дата', 'wc-advanced-scheduled-sale'); ?></th>
+                <td>
+                    <input type="date" name="wc_ass_end" value="<?php echo date('Y-m-d', strtotime('+1 month')); ?>" />
+                </td>
+            </tr>
+        </table>
+
+        <p class="submit">
+            <button type="button" class="button button-primary" id="wc-ass-preview"><?php _e('Preview / Test', 'wc-advanced-scheduled-sale'); ?></button>
+            <button type="submit" class="button button-secondary"><?php _e('Приложи отстъпките', 'wc-advanced-scheduled-sale'); ?></button>
+        </p>
     </form>
 
-    <?php if (isset($_POST['preview'])): 
-        $preview = WC_Ass_DryRun::preview_rules($rules);
-    ?>
-        <h3><?php _e('Preview резултати', 'wc-advanced-scheduled-sale'); ?></h3>
-        <table class="widefat">
-            <thead>
-                <tr>
-                    <th><?php _e('ID', 'wc-advanced-scheduled-sale'); ?></th>
-                    <th><?php _e('Име', 'wc-advanced-scheduled-sale'); ?></th>
-                    <th><?php _e('Оригинална цена', 'wc-advanced-scheduled-sale'); ?></th>
-                    <th><?php _e('Отстъпка %', 'wc-advanced-scheduled-sale'); ?></th>
-                    <th><?php _e('Нова цена', 'wc-advanced-scheduled-sale'); ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($preview as $row): ?>
-                    <tr>
-                        <td><?php echo esc_html($row['ID']); ?></td>
-                        <td><?php echo esc_html($row['Name']); ?></td>
-                        <td><?php echo esc_html($row['Original']); ?></td>
-                        <td><?php echo esc_html($row['Discount']); ?></td>
-                        <td><?php echo esc_html($row['New']); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
+    <div id="wc-ass-result"></div>
 </div>
