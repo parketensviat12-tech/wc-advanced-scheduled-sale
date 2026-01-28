@@ -1,0 +1,20 @@
+.wrap h1 {
+    color: #0073aa;
+}
+
+.widefat th {
+    background-color: #f1f1f1;
+    text-align: left;
+    padding: 8px;
+}
+
+.widefat td {
+    padding: 8px;
+}
+
+.button-primary {
+    background: #0073aa;
+    border-color: #006799;
+    color: #fff;
+    text-decoration: none;
+}

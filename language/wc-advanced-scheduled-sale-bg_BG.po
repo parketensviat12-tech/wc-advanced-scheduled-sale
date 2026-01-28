@@ -1,0 +1,38 @@
+msgid "Discount Rules for WooCommerce"
+msgstr "Правила за отстъпки за WooCommerce"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Enable"
+msgstr "Активирай"
+
+msgid "Disable"
+msgstr "Деактивирай"
+
+msgid "Preview"
+msgstr "Преглед"
+
+msgid "Apply"
+msgstr "Приложи"
+
+msgid "Rollback"
+msgstr "Възстановяване"
+
+msgid "Product"
+msgstr "Продукт"
+
+msgid "Category"
+msgstr "Категория"
+
+msgid "Brand"
+msgstr "Производител"
+
+msgid "Discount %"
+msgstr "Процент отстъпка"
+
+msgid "Start Date"
+msgstr "Начална дата"
+
+msgid "End Date"
+msgstr "Крайна дата"
